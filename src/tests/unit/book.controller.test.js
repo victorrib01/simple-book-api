@@ -2,7 +2,7 @@ const { createBook, getAllBooks, updateBook, deleteBook } = require('../../contr
 const Book = require('../../models/book');
 
 // Mock completo do modelo Book
-jest.mock('../../models/Book');
+jest.mock('../../models/book');
 
 describe('Book Controller', () => {
   afterEach(() => {
