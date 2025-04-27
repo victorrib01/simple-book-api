@@ -31,9 +31,14 @@ jobs:
           COVERAGE=$(node -p "
             const coverage = require('./coverage/coverage-final.json');
             const files = Object.values(coverage);
-            const totalLines = files.reduce((acc, file) => acc + file.lines.total, 0);
-            const coveredLines = files.reduce((acc, file) => acc + file.lines.covered, 0);
-            Math.round((coveredLines / totalLines) * 100);
+            const { totalStatements, coveredStatements } = files.reduce((acc, file) => {
+              const statements = Object.keys(file.statementMap || {}).length;
+              const covered = Object.values(file.s || {}).filter(v => v > 0).length;
+              acc.totalStatements += statements;
+              acc.coveredStatements += covered;
+              return acc;
+            }, { totalStatements: 0, coveredStatements: 0 });
+            Math.round((coveredStatements / totalStatements) * 100);
           ")
 
           if [ $COVERAGE -ge 90 ]; then
@@ -44,6 +49,7 @@ jobs:
             COLOR=red
           fi
 
+          echo "Coverage: $COVERAGE%"
           curl -o badges/coverage.svg "https://img.shields.io/badge/Coverage-${COVERAGE}%25-${COLOR}.svg"
 
       - name: Commit badge
