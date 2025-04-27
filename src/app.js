@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bookRoutesV1 = require('./routes/v1/book.routes');
+const authRoutesV1 = require('./routes/v1/auth.routes');
 const logger = require('./middlewares/logger');
 const errorHandler = require('./middlewares/errorHandler');
 const swaggerUi = require('swagger-ui-express');
@@ -18,6 +19,7 @@ app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rotas
+app.use('/api/v1/auth', authRoutesV1);
 app.use('/api/v1/books', bookRoutesV1);
 
 // Healthcheck (vamos adicionar já no próximo passo)

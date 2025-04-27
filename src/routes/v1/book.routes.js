@@ -30,7 +30,7 @@ const router = express.Router();
  *       201:
  *         description: Livro criado com sucesso
  */
-router.post('/', createBook);
+router.post('/', authMiddleware, createBook);
 
 /**
  * @swagger
@@ -71,7 +71,7 @@ router.get('/', getAllBooks);
  *         description: Livro atualizado com sucesso
  */
 
-router.put('/:id', updateBook);
+router.put('/:id', authMiddleware, updateBook);
 /**
  * @swagger
  * /api/v1/books/{id}:
@@ -88,6 +88,6 @@ router.put('/:id', updateBook);
  *       200:
  *         description: Livro removido com sucesso
  */
-router.delete('/:id', deleteBook);
+router.delete('/:id', authMiddleware, deleteBook);
 
 module.exports = router;
