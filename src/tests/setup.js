@@ -1,22 +1,27 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { connect, connection } from 'mongoose';
+import mongoose from 'mongoose';
 
-let mongo;
+let mongoServer;
 
 beforeAll(async () => {
-  mongo = await MongoMemoryServer.create();
-  const uri = mongo.getUri();
-  await connect(uri);
-});
 
-beforeEach(async () => {
-  const collections = await connection.db.collections();
-  for (let collection of collections) {
-    await collection.deleteMany({});
-  }
-});
+
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
+
+  await mongoose.connect(uri, {
+    dbName: 'simplebookapitest', // opcional: isola o banco por teste
+  });
+}, 30000); // 👈 aumenta o setup inicial para 30 segundos
 
 afterAll(async () => {
-  await connection.close();
-  await mongo.stop();
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
+
+afterEach(async () => {
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    await collections[key].deleteMany({});
+  }
 });

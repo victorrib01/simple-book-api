@@ -1,9 +1,10 @@
-import { create, find, countDocuments, findByIdAndUpdate, findByIdAndDelete } from '../models/book';
+// import { create, find, countDocuments, findByIdAndUpdate, findByIdAndDelete } from '../models/book';
+import Book from '../models/book.js';
 
 // Criar novo livro
 export async function createBook(req, res, next) {
   try {
-    const book = await create(req.body);
+    const book = await Book.create(req.body);
     res.status(201).json(book);
   } catch (error) {
     next(error);
@@ -25,12 +26,12 @@ export async function getAllBooks(req, res, next) {
       query.author = { $regex: author, $options: 'i' }; // Filtro por autor, insensível a maiúsculas
     }
 
-    const books = await find(query)
+    const books = await Book.find(query)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
 
-    const total = await countDocuments(query);
+    const total = await Book.countDocuments(query);
 
     res.status(200).json({
       total,
@@ -47,7 +48,7 @@ export async function getAllBooks(req, res, next) {
 // Atualizar livro
 export async function updateBook(req, res, next) {
   try {
-    const book = await findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!book) {
       return res.status(404).json({ message: 'Book not found' });
     }
@@ -60,7 +61,7 @@ export async function updateBook(req, res, next) {
 // Deletar livro
 export async function deleteBook(req, res, next) {
   try {
-    const book = await findByIdAndDelete(req.params.id);
+    const book = await Book.findByIdAndDelete(req.params.id);
     if (!book) {
       return res.status(404).json({ message: 'Book not found' });
     }

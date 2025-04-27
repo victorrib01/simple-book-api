@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { hash, compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
-import User, { findOne } from '../../models/user';
+import jwt from 'jsonwebtoken';
+import User from '../../models/user';
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.post('/register', async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    const existingUser = await findOne({ username });
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: 'Usuário já existe' });
     }
@@ -31,7 +31,7 @@ router.post('/login', async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    const user = await findOne({ username });
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(400).json({ message: 'Usuário ou senha inválidos' });
     }
@@ -41,7 +41,7 @@ router.post('/login', async (req, res, next) => {
       return res.status(400).json({ message: 'Usuário ou senha inválidos' });
     }
 
-    const token = sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.json({ token });
   } catch (err) {

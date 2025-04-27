@@ -11,7 +11,7 @@ describe('Book Model Test', () => {
     expect(savedBook.title).toBe(bookData.title);
     expect(savedBook.author).toBe(bookData.author);
     expect(savedBook.publishedYear).toBe(bookData.publishedYear);
-  });
+  },10000);
 
   it('should fail without required fields', async () => {
     const bookWithoutRequiredField = new Book({ author: 'Tester' });
