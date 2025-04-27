@@ -25,5 +25,3 @@ Thumbs.db
 # Optional: VScode settings (se quiser ignorar configs locais do VSCode)
 .vscode/
 
-# GitHub actions temp folders (geralmente automático)
-badges/
