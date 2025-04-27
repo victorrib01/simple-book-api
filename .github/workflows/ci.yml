@@ -1,4 +1,4 @@
-name: CI - Run Tests
+name: CI - Tests and Build Badge
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build and Test with Dynamic Badge
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +23,28 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Tests
-        run: npm run test
+      - name: Run tests
+        id: run_tests
+        run: |
+          npm run test
+
+      - name: Create badges folder
+        run: mkdir -p badges
+
+      - name: Generate build badge
+        if: success()
+        run: |
+          curl -o badges/build.svg "https://img.shields.io/badge/Build-Passing-brightgreen.svg"
+
+      - name: Generate build badge on failure
+        if: failure()
+        run: |
+          curl -o badges/build.svg "https://img.shields.io/badge/Build-Failing-red.svg"
+
+      - name: Commit badges
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions
+          author_email: github-actions@github.com
+          message: "chore: update build badge"
+          add: "badges/build.svg"

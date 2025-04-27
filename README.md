@@ -1,4 +1,4 @@
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Build](./badges/build.svg)
 ![Coverage](./badges/coverage.svg)
 
 
