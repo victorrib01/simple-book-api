@@ -25,11 +25,26 @@ jobs:
       - name: Run tests and collect coverage
         run: npm run test
 
-      - name: Generate coverage badge
+      - name: Generate coverage badge with Shields.io
         run: |
           mkdir -p badges
-          COVERAGE=$(node -p "Math.round(require('./coverage/coverage-final.json').total.lines.pct)")
-          echo '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20"><rect width="120" height="20" fill=\"#555\"/><rect x=\"60\" width=\"60\" height=\"20\" fill=\"#4c1\"/><text x=\"30\" y=\"14\" fill=\"#fff\" font-family=\"Verdana\" font-size=\"11\">coverage</text><text x=\"80\" y=\"14\" fill=\"#fff\" font-family=\"Verdana\" font-size=\"11\">'$COVERAGE'%</text></svg>' > badges/coverage.svg
+          COVERAGE=$(node -p "
+            const coverage = require('./coverage/coverage-final.json');
+            const files = Object.values(coverage);
+            const totalLines = files.reduce((acc, file) => acc + file.lines.total, 0);
+            const coveredLines = files.reduce((acc, file) => acc + file.lines.covered, 0);
+            Math.round((coveredLines / totalLines) * 100);
+          ")
+
+          if [ $COVERAGE -ge 90 ]; then
+            COLOR=brightgreen
+          elif [ $COVERAGE -ge 75 ]; then
+            COLOR=yellow
+          else
+            COLOR=red
+          fi
+
+          curl -o badges/coverage.svg "https://img.shields.io/badge/Coverage-${COVERAGE}%25-${COLOR}.svg"
 
       - name: Commit badge
         uses: EndBug/add-and-commit@v9
