@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createBook, getAllBooks, updateBook, deleteBook } from '../../controllers/book.controller';
+import authMiddleware from '../../middlewares/authMiddleware';
 
 /**
  * @swagger
