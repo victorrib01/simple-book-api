@@ -1,22 +1,22 @@
-const express = require('express');
-const cors = require('cors');
-const bookRoutesV1 = require('./routes/v1/book.routes');
-const authRoutesV1 = require('./routes/v1/auth.routes');
-const logger = require('./middlewares/logger');
-const errorHandler = require('./middlewares/errorHandler');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./swagger/swaggerConfig');
+import express, { json } from 'express';
+import cors from 'cors';
+import bookRoutesV1 from './routes/v1/book.routes';
+import authRoutesV1 from './routes/v1/auth.routes';
+import logger from './middlewares/logger';
+import errorHandler from './middlewares/errorHandler';
+import { serve, setup } from 'swagger-ui-express';
+import swaggerSpec from './swagger/swaggerConfig';
 
 
 const app = express();
 
 // Middlewares globais
-app.use(express.json());
+app.use(json());
 app.use(logger);
 app.use(cors());
 
 // Rotas Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', serve, setup(swaggerSpec));
 
 // Rotas
 app.use('/api/v1/auth', authRoutesV1);
@@ -31,4 +31,4 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 
-module.exports = app;
+export default app;

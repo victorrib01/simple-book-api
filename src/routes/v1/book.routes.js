@@ -1,5 +1,5 @@
-const express = require('express');
-const { createBook, getAllBooks, updateBook, deleteBook } = require('../../controllers/book.controller');
+import { Router } from 'express';
+import { createBook, getAllBooks, updateBook, deleteBook } from '../../controllers/book.controller';
 
 /**
  * @swagger
@@ -7,7 +7,7 @@ const { createBook, getAllBooks, updateBook, deleteBook } = require('../../contr
  *   name: Books
  *   description: API para gerenciar livros
  */
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
@@ -90,4 +90,4 @@ router.put('/:id', authMiddleware, updateBook);
  */
 router.delete('/:id', authMiddleware, deleteBook);
 
-module.exports = router;
+export default router;

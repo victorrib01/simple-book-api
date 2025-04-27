@@ -1,21 +1,21 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../../models/user');
+import { Router } from 'express';
+import { hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
+import User, { findOne } from '../../models/user';
 
-const router = express.Router();
+const router = Router();
 
 // Registrar novo usuário
 router.post('/register', async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    const existingUser = await User.findOne({ username });
+    const existingUser = await findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: 'Usuário já existe' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
 
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
@@ -31,17 +31,17 @@ router.post('/login', async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await findOne({ username });
     if (!user) {
       return res.status(400).json({ message: 'Usuário ou senha inválidos' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ message: 'Usuário ou senha inválidos' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.json({ token });
   } catch (err) {
@@ -49,4 +49,4 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

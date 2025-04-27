@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Book = require('../../models/book');
+import { Error } from 'mongoose';
+import Book from '../../models/book';
 
 describe('Book Model Test', () => {
   it('should create & save a book successfully', async () => {
@@ -21,7 +21,7 @@ describe('Book Model Test', () => {
     } catch (error) {
       err = error;
     }
-    expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
+    expect(err).toBeInstanceOf(Error.ValidationError);
     expect(err.errors.title).toBeDefined();
   });
 });

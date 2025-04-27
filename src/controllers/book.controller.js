@@ -1,39 +1,71 @@
-const Book = require('../models/book');
+import { create, find, countDocuments, findByIdAndUpdate, findByIdAndDelete } from '../models/book';
 
-exports.createBook = async (req, res) => {
+// Criar novo livro
+export async function createBook(req, res, next) {
   try {
-    const book = await Book.create(req.body);
+    const book = await create(req.body);
     res.status(201).json(book);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
-};
+}
 
-exports.getAllBooks = async (req, res) => {
+// Buscar todos os livros com paginação e filtros
+export async function getAllBooks(req, res, next) {
   try {
-    const books = await Book.find();
-    res.status(200).json(books);
+    const { page = 1, limit = 10, title, author } = req.query;
+
+    const query = {};
+
+    if (title) {
+      query.title = { $regex: title, $options: 'i' }; // Filtro por título, insensível a maiúsculas
+    }
+
+    if (author) {
+      query.author = { $regex: author, $options: 'i' }; // Filtro por autor, insensível a maiúsculas
+    }
+
+    const books = await find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const total = await countDocuments(query);
+
+    res.status(200).json({
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / limit),
+      data: books,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
-};
+}
 
-exports.updateBook = async (req, res) => {
+// Atualizar livro
+export async function updateBook(req, res, next) {
   try {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!book) return res.status(404).json({ message: 'Book not found' });
+    const book = await findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
     res.status(200).json(book);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
-};
+}
 
-exports.deleteBook = async (req, res) => {
+// Deletar livro
+export async function deleteBook(req, res, next) {
   try {
-    const book = await Book.findByIdAndDelete(req.params.id);
-    if (!book) return res.status(404).json({ message: 'Book not found' });
+    const book = await findByIdAndDelete(req.params.id);
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
     res.status(200).json({ message: 'Book deleted' });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
-};
+}

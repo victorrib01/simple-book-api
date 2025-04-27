@@ -1,17 +1,17 @@
-const request = require('supertest');
-const app = require('../../app');
-const mongoose = require('mongoose');
-const Book = require('../../models/book');
+import request from 'supertest';
+import { listen } from '../../app';
+import { connection } from 'mongoose';
+import { create } from '../../models/book';
 
 let server;
 
 beforeAll((done) => {
-  server = app.listen(4000, () => done());
+  server = listen(4000, () => done());
 });
 
 afterAll(async () => {
   await server.close();
-  await mongoose.connection.close();
+  await connection.close();
 });
 
 describe('Book API Endpoints', () => {
@@ -25,7 +25,7 @@ describe('Book API Endpoints', () => {
   });
 
   it('should fetch all books', async () => {
-    await Book.create({ title: 'Another Book', author: 'Author', publishedYear: 2023 });
+    await create({ title: 'Another Book', author: 'Author', publishedYear: 2023 });
 
     const res = await request(server).get('/api/books');
 
@@ -34,7 +34,7 @@ describe('Book API Endpoints', () => {
   });
 
   it('should update a book', async () => {
-    const book = await Book.create({ title: 'Book to Update', author: 'Someone', publishedYear: 2020 });
+    const book = await create({ title: 'Book to Update', author: 'Someone', publishedYear: 2020 });
 
     const res = await request(server)
       .put(`/api/books/${book._id}`)
@@ -45,7 +45,7 @@ describe('Book API Endpoints', () => {
   });
 
   it('should delete a book', async () => {
-    const book = await Book.create({ title: 'Book to Delete', author: 'Someone', publishedYear: 2020 });
+    const book = await create({ title: 'Book to Delete', author: 'Someone', publishedYear: 2020 });
 
     const res = await request(server)
       .delete(`/api/books/${book._id}`);

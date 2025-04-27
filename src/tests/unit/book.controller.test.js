@@ -1,5 +1,5 @@
-const { createBook, getAllBooks, updateBook, deleteBook } = require('../../controllers/book.controller');
-const Book = require('../../models/book');
+import { createBook, getAllBooks, updateBook, deleteBook } from '../../controllers/book.controller';
+import { create, find, findByIdAndUpdate, findByIdAndDelete } from '../../models/book';
 
 // Mock completo do modelo Book
 jest.mock('../../models/book');
@@ -14,7 +14,7 @@ describe('Book Controller', () => {
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const error = new Error('Creation Error');
 
-    Book.create.mockRejectedValue(error);
+    create.mockRejectedValue(error);
 
     await createBook(req, res);
 
@@ -27,7 +27,7 @@ describe('Book Controller', () => {
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const error = new Error('Fetch Error');
 
-    Book.find.mockRejectedValue(error);
+    find.mockRejectedValue(error);
 
     await getAllBooks(req, res);
 
@@ -40,7 +40,7 @@ describe('Book Controller', () => {
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const error = new Error('Update Error');
 
-    Book.findByIdAndUpdate.mockRejectedValue(error);
+    findByIdAndUpdate.mockRejectedValue(error);
 
     await updateBook(req, res);
 
@@ -53,7 +53,7 @@ describe('Book Controller', () => {
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const error = new Error('Delete Error');
 
-    Book.findByIdAndDelete.mockRejectedValue(error);
+    findByIdAndDelete.mockRejectedValue(error);
 
     await deleteBook(req, res);
 
@@ -65,7 +65,7 @@ describe('Book Controller', () => {
     const req = { params: { id: '123' }, body: { title: 'New Title' } };
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
   
-    Book.findByIdAndUpdate.mockResolvedValue(null);
+    findByIdAndUpdate.mockResolvedValue(null);
   
     await updateBook(req, res);
   
@@ -77,7 +77,7 @@ describe('Book Controller', () => {
     const req = { params: { id: '123' } };
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
   
-    Book.findByIdAndDelete.mockResolvedValue(null);
+    findByIdAndDelete.mockResolvedValue(null);
   
     await deleteBook(req, res);
   
